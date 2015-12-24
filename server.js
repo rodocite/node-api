@@ -1,7 +1,7 @@
 var express = require('express');
 app = express();
 var bodyParser = require('body-parser');
-var Names = require('./models/Names');
+var Name = require('./models/Name');
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -12,20 +12,19 @@ var router = express.Router();
 // Endpoints
 router.route('/get')
   .get((req, res) => {
-    Names.findAll({
+    Name.findAll({
       attributes: ['id', 'name']
     })
-    .then(names => res.json(names));
+    .then(names => res.json({data: names}));
   });
 
 router.route('/post')
+  // TODO: Handling req.body on null/error submissions
   .post((req, res) => {
     var TODO = req.body || 'default';
-    Names.sync().then(() => {
-      Names.create(TODO).then(post => {
-        res.json(TODO);
-      })
-    })
+    Name.create(TODO).then(post => {
+      res.json(TODO);
+    });
   });
 
 app.use('/api', router);
