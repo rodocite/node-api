@@ -1,7 +1,15 @@
 var express = require('express');
 app = express();
 var bodyParser = require('body-parser');
-var Model = require('./app/models/model');
+
+var mysql = require('mysql');
+var con = mysql.createConnection({
+  host: 'localhost',
+  user: 'root',
+  database: 'node_api'
+});
+
+con.connect();
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -12,13 +20,21 @@ var router = express.Router();
 // Endpoints
 router.route('/get')
   .get((req, res) => {
-    res.json(Model.get());
+    con.query('SELECT * FROM names', function(err, rows) {
+      res.json(rows);
+    })
   });
 
 router.route('/post')
   .post((req, res) => {
-    Model.post(req.body);
-    res.end('OK');
+    if(!req.body.name) {
+      res.json('Error');
+      res.end('Error');
+    } else {
+      var name = req.body.name;
+      con.query('INSERT INTO names SET ?', { 'name': name });
+      res.end('OK');
+    }
   });
 
 app.use('/api', router);
