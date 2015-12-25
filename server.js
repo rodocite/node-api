@@ -21,11 +21,41 @@ router.route('/get')
 router.route('/post')
   // TODO: Handling req.body on null/error submissions
   .post((req, res) => {
-    var TODO = req.body || 'default';
-    Name.create(TODO).then(post => {
-      res.json(TODO);
+    var TODO = req.body.name || 'default';
+    Name.create({ name: TODO }).then(post => {
+      res.json(post);
     });
   });
+
+router.route('/update')
+  .post((req, res) => {
+    var newName = req.body.name;
+    var id = req.body.id;
+
+    Name.findById(id).then(name => {
+      if(name) {
+        name.updateAttributes({ name: newName });
+      } else {
+        res.json('Could not find record.')
+      }
+    });
+  });
+
+router.route('/delete')
+  .post((req, res) => {
+    var newName = req.body.name;
+    var id = req.body.id;
+
+    Name.findById(id).then(name => {
+      if(name) {
+        name.destroy();
+        res.json('Record successfully deleted.');
+      } else {
+        res.json('Could not find record.');
+      }
+    });
+  })
+
 
 app.use('/api', router);
 app.listen(port);
