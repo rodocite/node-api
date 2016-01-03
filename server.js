@@ -13,7 +13,7 @@ app.get('/names', (req, res) => {
   Name.findAll({
     attributes: ['id', 'name']
   })
-  .then(names => res.json({data: names}));
+  .then(names => res.json(names));
 })
 
 app.get('/names/:id', (req, res) => {
